@@ -1,0 +1,37 @@
+<h1>Contact List</h1>
+<div class="contact-edit" *ngIf="_contactForEdit" style="border: 1px solid black;">
+  <label for="Id">Id:</label>
+  <input type="number" id="Id" name="Id" [(ngModel)]="_contactForEdit.Id" disabled="disabled" />
+  <br />
+  <label for="Name">Name:</label>
+  <input type="text" id="Name" name="Name" [(ngModel)]="_contactForEdit.Name" />
+  <br />
+  <label for="Phone">Phone:</label>
+  <input type="text" id="Phone" name="Phone" [(ngModel)]="_contactForEdit.Phone" />
+  <br />
+  <label for="Email">Email:</label>
+  <input type="text" id="Email" name="Email" [(ngModel)]="_contactForEdit.Email" />
+  <br />
+  <button (click)="_saveEditContact()">Save Changes</button>
+</div>
+<div class="contacts" style="margin-top: 15px;">
+  <button (click)="_addNewContact()">Add New Contact</button>
+  <table>
+    <thead>
+      <tr>
+        <th>Actions</th>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let contact of contactList">
+        <td><button (click)="_editContact(contact)">Edit</button><button (click)="_deleteContact(contact)">Delete</button></td>
+        <td>{{contact.Name}}</td>
+        <td>{{contact.Phone}}</td>
+        <td>{{contact.Email}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
