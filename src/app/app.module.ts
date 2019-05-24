@@ -5,10 +5,11 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { ContactService } from './services/contact.service';
+import { ValidateDirective } from './directives/validate.directive';
 
 @NgModule({
   imports:      [ BrowserModule, FormsModule, HttpClientModule, ],
-  declarations: [ AppComponent ],
+  declarations: [ AppComponent, ValidateDirective ],
   bootstrap:    [ AppComponent ],
   providers: [ContactService]
 })
