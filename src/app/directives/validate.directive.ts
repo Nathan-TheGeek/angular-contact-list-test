@@ -15,6 +15,7 @@ export class ValidateDirective implements OnInit, OnChanges {
 
   ngOnInit() {
     this.errorDisplay = this.r.createElement('span');
+    this.r.appendChild(this.el.nativeElement.parentNode, this.errorDisplay);
     this.setup = true;
   }
 
@@ -31,6 +32,7 @@ export class ValidateDirective implements OnInit, OnChanges {
     if (this.required && !value) {
       this.errorMsg = 'The field [' + fieldName + '] is required.';
     }
+    console.log(this.errorMsg.length);
     if(this.errorMsg.length > 0) {
       this.showError();
     } else  {
@@ -40,17 +42,18 @@ export class ValidateDirective implements OnInit, OnChanges {
 
   private showError() {
     const errorText = this.r.createText(this.errorMsg);
-    this.r.appendChild(this.el.nativeElement.parentNode, errorText);
     this.backgroundColor = 'red';
+    this.r.appendChild(this.errorDisplay, errorText);
     this.r.setStyle(this.errorDisplay, 'display', 'inline-block');
   }
 
   private hideError() {
-    const childElements = this.errorDisplay.nativeElement.childNodes;
-    this.r.setStyle(this.errorDisplay, 'display', 'none');
-    this.backgroundColor = 'none';
+    console.log(this.errorDisplay);
+    const childElements = this.errorDisplay.nativeElement;
     for (let child of childElements) {
       this.r.removeChild(this.errorDisplay.nativeElement, child);
     }
+    this.r.setStyle(this.errorDisplay, 'display', 'none');
+    this.backgroundColor = 'none';
   }
 }
