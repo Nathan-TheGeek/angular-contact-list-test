@@ -69,7 +69,7 @@ export class ValidateDirective implements OnInit, OnChanges, AfterViewInit {
     } else  {
       this.hideError();
       this.valid = true;
-      this.validChange.emit(false);
+      this.validChange.emit(true);
     }
   }
 
