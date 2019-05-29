@@ -1,4 +1,4 @@
-import { Directive, OnInit, OnChanges, AfterViewInit, ElementRef, Renderer2, HostBinding, HostListener, Input } from '@angular/core';
+import { Directive, OnInit, OnChanges, AfterViewInit, ElementRef, Renderer2, HostBinding, HostListener, Input, Output, EventEmitter } from '@angular/core';
 
 @Directive({
   selector: '[appValidate]'
@@ -13,6 +13,9 @@ export class ValidateDirective implements OnInit, OnChanges, AfterViewInit {
   @Input() required = false;
   @Input() label: string;
   @Input() id: string;
+  @Input() valid: boolean;
+  @Output() validChange = new EventEmitter<boolean>();
+
 
   constructor(private el: ElementRef, private r: Renderer2) { }
 
@@ -61,8 +64,12 @@ export class ValidateDirective implements OnInit, OnChanges, AfterViewInit {
     }
     if(this.errorMsg.length > 0) {
       this.showError();
+      this.valid = false;
+      this.validChange.emit(false);
     } else  {
       this.hideError();
+      this.valid = true;
+      this.validChange.emit(false);
     }
   }
 
