@@ -78,9 +78,7 @@ export class ValidateDirective implements OnInit, OnChanges, AfterViewInit {
   private hideError() {
     // get and remove any error messages.
     const childElements = (<any>this.errorDisplay).childNodes;
-    console.log(childElements);
     for (let child of childElements) {
-      console.log(child);
       this.r.removeChild(this.errorDisplay, child);
     }
     // revert style
