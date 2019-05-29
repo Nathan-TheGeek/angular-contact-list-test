@@ -23,24 +23,22 @@ export class ValidateDirective implements OnInit, OnChanges, AfterViewInit {
   ngAfterViewInit() {
     // Get parent of the original input element
     let parent = this.el.nativeElement.parentNode;
+    // save a ref to input to change background color
     this.inputRef = this.el.nativeElement;
-    // Create a div
+    // Create a div wrapper for the input
     let divElement = this.r.createElement('div');
-    // Add class "input-wrapper"
     this.r.addClass(divElement, 'validated-field');
-    // Add the div, just before the input
+    // add wrapper div to dom
     this.r.insertBefore(parent, divElement, this.inputRef);
-    // Remove the input
     this.r.removeChild(parent, this.inputRef);
-    // Remove the directive attribute (not really necessary, but just to be clean)
     this.r.removeAttribute(this.inputRef, 'appValidate');
-    // add the label for the input.
+    // add label to div
     let label = this.r.createElement('label');
     this.r.setAttribute(label, 'for', this.id);
     let labelText = this.r.createText(this.label);
     this.r.appendChild(label, labelText); 
     this.r.appendChild(divElement, label);
-    // Re-add the input inside the div
+    // re-add the input
     this.r.appendChild(divElement, this.inputRef);
     // add the error display.
     this.errorDisplay = this.r.createElement('span');
@@ -48,7 +46,7 @@ export class ValidateDirective implements OnInit, OnChanges, AfterViewInit {
     this.r.appendChild(divElement, this.errorDisplay);
 }
 
-  @HostListener('change') ngOnChanges() {
+  @HostListener('change') @HostListener('blur') ngOnChanges() {
     if(this.setup) {
       this.validate();
     }
@@ -69,6 +67,7 @@ export class ValidateDirective implements OnInit, OnChanges, AfterViewInit {
   }
 
   private showError() {
+    this.removeAllErrorText();
     const errorText = this.r.createText(this.errorMsg);
     this.r.setStyle(this.inputRef, 'background-color', 'red');
     this.r.appendChild(this.errorDisplay, errorText);
@@ -76,13 +75,17 @@ export class ValidateDirective implements OnInit, OnChanges, AfterViewInit {
   }
 
   private hideError() {
+    this.removeAllErrorText();
+    // revert style
+    this.r.setStyle(this.errorDisplay, 'display', 'none');
+    this.r.removeStyle(this.inputRef, 'background-color');
+  }
+
+  private removeAllErrorText() {
     // get and remove any error messages.
     const childElements = (<any>this.errorDisplay).childNodes;
     for (let child of childElements) {
       this.r.removeChild(this.errorDisplay, child);
     }
-    // revert style
-    this.r.setStyle(this.errorDisplay, 'display', 'none');
-    this.r.removeStyle(this.inputRef, 'background-color');
   }
 }
