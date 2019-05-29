@@ -1,7 +1,7 @@
 <h1>Contact List</h1>
 <div class="contact-edit" *ngIf="_contactForEdit" style="border: 1px solid black;">
   <input type="number" id="Id" name="Id" label="Id:" appValidate [required]="true" [(ngModel)]="_contactForEdit.Id" disabled="disabled" />
-  <input type="text" id="Name" name="Name" label="Name:" appValidate [required]="true" [(ngModel)]="_contactForEdit.Name" />
+  <input type="text" id="Name" name="Name" label="Name:" appValidate [required]="true" [(ngModel)]="_contactForEdit.Name" [(valid)]="nameValid"/>
   <input type="text" id="Phone" name="Phone" label="Phone:" appValidate [(ngModel)]="_contactForEdit.Phone" />
   <input type="text" id="Email" name="Email" label="Email:" appValidate [(ngModel)]="_contactForEdit.Email" />
   <button (click)="_saveEditContact()">Save Changes</button>

@@ -10,6 +10,7 @@ import { ContactDataModel } from './models/contact.data.model';
 export class AppComponent  implements OnInit {
   private contactList: Array<ContactDataModel>;
   _contactForEdit: ContactDataModel;
+  nameValid: boolean;
 
   constructor(private contRepo: ContactService) {}
 
@@ -34,9 +35,11 @@ export class AppComponent  implements OnInit {
 
   async _saveEditContact() {
     try {
-      await this.contRepo.saveContact(this._contactForEdit);
-      this.loadContacts();
-      this._contactForEdit = null;
+      if (this.nameValid) {
+        await this.contRepo.saveContact(this._contactForEdit);
+        this.loadContacts();
+        this._contactForEdit = null;
+      }
     } catch (e) {
       alert(e);
     }
