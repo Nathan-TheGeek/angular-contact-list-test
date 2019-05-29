@@ -10,7 +10,7 @@ import { ContactDataModel } from './models/contact.data.model';
 export class AppComponent  implements OnInit {
   private contactList: Array<ContactDataModel>;
   _contactForEdit: ContactDataModel;
-  nameValid: boolean;
+  formValidation: any = {};
 
   constructor(private contRepo: ContactService) {}
 
@@ -35,7 +35,7 @@ export class AppComponent  implements OnInit {
 
   async _saveEditContact() {
     try {
-      if (this.nameValid) {
+      if (this.verifyValidForm()) {
         await this.contRepo.saveContact(this._contactForEdit);
         this.loadContacts();
         this._contactForEdit = null;
@@ -47,6 +47,16 @@ export class AppComponent  implements OnInit {
 
   private async loadContacts() {
     this.contactList = await this.contRepo.getAllContacts();
+  }
+
+  private verifyValidForm() {
+    let valid = true;
+    for (let field in this.formValidation) {
+      if (this.formValidation.hasOwnProperty(field) && !this.formValidation[field]) {
+        valid = false;
+      }
+    }
+    return valid;
   }
 
 }
