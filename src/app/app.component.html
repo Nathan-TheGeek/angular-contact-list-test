@@ -3,9 +3,7 @@
   <label for="Id">Id:</label>
   <input type="number" id="Id" name="Id" [(ngModel)]="_contactForEdit.Id" disabled="disabled" />
   <br />
-  <label for="Name">Name:</label>
-  <input type="text" id="Name" name="Name" appValidate [required]="true" [(ngModel)]="_contactForEdit.Name" />
-  <br />
+  <input type="text" id="Name" name="Name" label="Name:" appValidate [required]="true" [(ngModel)]="_contactForEdit.Name" />
   <label for="Phone">Phone:</label>
   <input type="text" id="Phone" name="Phone" [(ngModel)]="_contactForEdit.Phone" />
   <br />
