@@ -35,7 +35,6 @@ export class AppComponent  implements OnInit {
 
   async _saveEditContact() {
     try {
-      console.log(this.nameValid);
       if (this.nameValid) {
         await this.contRepo.saveContact(this._contactForEdit);
         this.loadContacts();
