@@ -1,4 +1,5 @@
-import { Directive, OnInit, OnChanges, AfterViewInit, ElementRef, Renderer2, HostBinding, HostListener, Input, Output, EventEmitter } from '@angular/core';
+import { Directive, OnInit, OnChanges, SimpleChanges, AfterViewInit, ElementRef, Renderer2, HostBinding, HostListener, Input, Output, EventEmitter } from '@angular/core';
+import { FieldValidation } from '../models/formValidation';
 
 @Directive({
   selector: '[appValidate]'
@@ -7,15 +8,15 @@ export class ValidateDirective implements OnInit, OnChanges, AfterViewInit {
   private setup = false;
   private errorDisplay: ElementRef;
   private inputRef; 
-  private errorMsg = '';
+  private name: string;
+  private value: string;
   @HostBinding('style.background-color')
   backgroundColor: string = 'none';
   @Input() required = false;
   @Input() label: string;
   @Input() id: string;
-  @Input() valid: boolean;
-  @Output() validChange = new EventEmitter<boolean>();
-
+  @Input() validation: FieldValidation;
+  @Output() validationChange = new EventEmitter<FieldValidation>();
 
   constructor(private el: ElementRef, private r: Renderer2) { }
 
@@ -49,33 +50,52 @@ export class ValidateDirective implements OnInit, OnChanges, AfterViewInit {
     this.r.appendChild(divElement, this.errorDisplay);
 }
 
-  @HostListener('change') @HostListener('blur') ngOnChanges() {
-    if(this.setup) {
-      this.validate();
+  @HostListener('change') @HostListener('blur')
+  changeValue() {
+    this.validate();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    this.ensureValidationSetup();
+    // don't validate if not setup or if fired by setting up the validation object.
+    const validationSetUp = (changes.validation &&changes.validation.previousValue === undefined && changes.validation.currentValue !== undefined);
+    if(this.setup && !validationSetUp) {   
+      if (changes.validation && !changes.validation.currentValue.isValid) {
+        this.showError();
+      } else {
+        this.validate();
+      }
     }
   }
 
   private validate() {
-    this.errorMsg = '';
+    this.validation.errorMsg = '';
+    this.hideError();
     const value = this.el.nativeElement.value;
     const fieldName = this.el.nativeElement.getAttribute('name');
     if (this.required && !value) {
-      this.errorMsg = 'The field [' + fieldName + '] is required.';
+      this.validation.errorMsg = 'The field [' + fieldName + '] is required.';
     }
-    if(this.errorMsg.length > 0) {
+    // if no errors execute custom validation.
+    if (this.validation.errorMsg.length == 0 && this.validation.customValidation) {
+      const results = this.validation.customValidation(fieldName, value);
+      if (!results.isValid) {
+        this.validation.errorMsg = results.errorMsg;
+      }
+    }
+    if (this.validation.errorMsg.length > 0) {
       this.showError();
-      this.valid = false;
-      this.validChange.emit(false);
+      this.validation.isValid = false;
+      this.validationChange.emit(this.validation);
     } else  {
-      this.hideError();
-      this.valid = true;
-      this.validChange.emit(true);
+      this.validation.isValid = true;
+      this.validationChange.emit(this.validation);
     }
   }
 
   private showError() {
     this.removeAllErrorText();
-    const errorText = this.r.createText(this.errorMsg);
+    const errorText = this.r.createText(this.validation.errorMsg);
     this.r.setStyle(this.inputRef, 'background-color', 'red');
     this.r.appendChild(this.errorDisplay, errorText);
     this.r.setStyle(this.errorDisplay, 'display', 'inline-block');
@@ -90,9 +110,26 @@ export class ValidateDirective implements OnInit, OnChanges, AfterViewInit {
 
   private removeAllErrorText() {
     // get and remove any error messages.
-    const childElements = (<any>this.errorDisplay).childNodes;
+    const temp: any = this.errorDisplay;
+    const childElements = temp.childNodes;
     for (let child of childElements) {
       this.r.removeChild(this.errorDisplay, child);
     }
+  }
+
+  private ensureValidationSetup() {
+    if (!this.validation) {
+      this.validation = {};
+    }
+    if (this.validation.isValid == null){
+      this.validation.isValid = true;
+    } 
+    if (this.validation.errorMsg == null) {
+      this.validation.errorMsg = '';
+    }
+    if (!this.validation.validate) {
+      this.validation.validate = () => { this.validate(); return this.validation; };
+    }
+    this.validationChange.emit(this.validation);
   }
 }
