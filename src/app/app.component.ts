@@ -58,8 +58,7 @@ export class AppComponent  implements OnInit {
     this._contactForEdit = null;
   }
   async _makeErrors() {
-    this.formValidation.Name.isValid = false;
-    this.formValidation.Name.errorMsg = 'Generated Error Message';
+    this.formValidation['Name'] = {isValid: false, errorMsg: 'Generated Error Message'};
   }
 
   private async loadContacts() {

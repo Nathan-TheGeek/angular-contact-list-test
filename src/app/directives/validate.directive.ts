@@ -58,6 +58,7 @@ export class ValidateDirective implements OnInit, OnChanges, AfterViewInit {
   ngOnChanges(changes: SimpleChanges) {
     this.ensureValidationSetup();
     // don't validate if not setup or if fired by setting up the validation object. 
+    console.log(changes);
     const validationSetUp = (changes.validation &&changes.validation.previousValue === undefined && changes.validation.currentValue !== undefined);
     if(this.setup && !validationSetUp) {   
       if (changes.validation && !changes.validation.currentValue.isValid) {
