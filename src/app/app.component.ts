@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ContactService } from './services/contact.service';
 import { ContactDataModel } from './models/contact.data.model';
+import { FieldValidation, Validation } from './models/formValidation';
 
 @Component({
   selector: 'my-app',
@@ -10,7 +11,7 @@ import { ContactDataModel } from './models/contact.data.model';
 export class AppComponent  implements OnInit {
   private contactList: Array<ContactDataModel>;
   _contactForEdit: ContactDataModel;
-  formValidation: any = {};
+  formValidation: {[key:string]:FieldValidation} = {};
 
   constructor(private contRepo: ContactService) {}
 
@@ -20,6 +21,7 @@ export class AppComponent  implements OnInit {
 
   async _editContact(contact: ContactDataModel) {
     this._contactForEdit = JSON.parse(JSON.stringify(contact));
+    Validation.validateAllFields(this.formValidation);
   }
   async _deleteContact(contact: ContactDataModel) {
     const del = window.confirm('Are you sure you want to delete contact ' + contact.Name + '? This cannot be undone.');
@@ -35,7 +37,7 @@ export class AppComponent  implements OnInit {
 
   async _saveEditContact() {
     try {
-      if (this.verifyValidForm()) {
+      if (Validation.verifyValidForm(this.formValidation)) {
         await this.contRepo.saveContact(this._contactForEdit);
         this.loadContacts();
         this._contactForEdit = null;
@@ -47,16 +49,6 @@ export class AppComponent  implements OnInit {
 
   private async loadContacts() {
     this.contactList = await this.contRepo.getAllContacts();
-  }
-
-  private verifyValidForm() {
-    let valid = true;
-    for (let field in this.formValidation) {
-      if (this.formValidation.hasOwnProperty(field) && !this.formValidation[field]) {
-        valid = false;
-      }
-    }
-    return valid;
   }
 
 }
