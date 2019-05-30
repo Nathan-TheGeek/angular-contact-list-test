@@ -128,7 +128,7 @@ export class ValidateDirective implements OnInit, OnChanges, AfterViewInit {
       this.validation.errorMsg = '';
     }
     if (!this.validation.validate) {
-      this.validation.validate = () => { this.validate(); };
+      this.validation.validate = () => { this.validate(); return this.validation; };
     }
     this.validationChange.emit(this.validation);
   }

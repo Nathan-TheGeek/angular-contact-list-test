@@ -2,7 +2,7 @@ export interface FieldValidation {
   isValid?: boolean;
   errorMsg?: string;
   customValidation?: (name: string, value: any) => FieldValidationResult;
-  validate?: () => void;
+  validate?: () => FieldValidation;
 }
 
 export interface FieldValidationResult {
@@ -15,8 +15,8 @@ export namespace Validation{
     let valid = true;
     for (let field in form) {
       if (form.hasOwnProperty(field)) {
-        form[field].validate();
-        if (!form[field].isValid) {
+        const validation = form[field].validate();
+        if (!validation.isValid) {
           valid = false;
         }
       }
