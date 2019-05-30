@@ -1,7 +1,7 @@
 export interface FieldValidation {
   isValid?: boolean;
   errorMsg?: string;
-  customValidation?: () => FieldValidationResult;
+  customValidation?: (name: string, value: any) => FieldValidationResult;
   validate?: () => void;
 }
 

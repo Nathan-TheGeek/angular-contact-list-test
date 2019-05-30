@@ -1,4 +1,4 @@
-import { Directive, OnInit, OnChanges, AfterViewInit, ElementRef, Renderer2, HostBinding, HostListener, Input, Output, EventEmitter } from '@angular/core';
+import { Directive, OnInit, OnChanges, SimpleChanges, AfterViewInit, ElementRef, Renderer2, HostBinding, HostListener, Input, Output, EventEmitter } from '@angular/core';
 import { FieldValidation } from '../models/formValidation';
 
 @Directive({
@@ -6,9 +6,10 @@ import { FieldValidation } from '../models/formValidation';
 })
 export class ValidateDirective implements OnInit, OnChanges, AfterViewInit {
   private setup = false;
-  private changed = false;
   private errorDisplay: ElementRef;
   private inputRef; 
+  private name: string;
+  private value: string;
   @HostBinding('style.background-color')
   backgroundColor: string = 'none';
   @Input() required = false;
@@ -20,7 +21,6 @@ export class ValidateDirective implements OnInit, OnChanges, AfterViewInit {
   constructor(private el: ElementRef, private r: Renderer2) { }
 
   ngOnInit() {
-    this.ensureValidationSetup();
     this.setup = true;
   }
 
@@ -52,30 +52,38 @@ export class ValidateDirective implements OnInit, OnChanges, AfterViewInit {
 
   @HostListener('change') @HostListener('blur')
   changeValue() {
-    this.changed = true;
     this.validate();
   }
 
-  ngOnChanges() {
+  ngOnChanges(changes: SimpleChanges) {
     this.ensureValidationSetup();
-    if(this.setup) {
+    // don't validate if not setup or if fired by setting up the validation object. 
+    if(this.setup && !(changes.validation.previousValue === undefined && changes.validation.currentValue !== undefined)) {
       this.validate();
     }
   }
 
   private validate() {
     this.validation.errorMsg = '';
+    this.hideError();
     const value = this.el.nativeElement.value;
     const fieldName = this.el.nativeElement.getAttribute('name');
+    console.log('validate field[' + fieldName + '] value[' + value + ']');
     if (this.required && !value) {
       this.validation.errorMsg = 'The field [' + fieldName + '] is required.';
     }
-    if(this.validation.errorMsg.length > 0) {
+    // if no errors execute custom validation.
+    if (this.validation.errorMsg.length == 0 && this.validation.customValidation) {
+      const results = this.validation.customValidation(fieldName, value);
+      if (!results.isValid) {
+        this.validation.errorMsg = results.errorMsg;
+      }
+    }
+    if (this.validation.errorMsg.length > 0) {
       this.showError();
       this.validation.isValid = false;
       this.validationChange.emit(this.validation);
     } else  {
-      this.hideError();
       this.validation.isValid = true;
       this.validationChange.emit(this.validation);
     }
@@ -118,5 +126,6 @@ export class ValidateDirective implements OnInit, OnChanges, AfterViewInit {
     if (!this.validation.validate) {
       this.validation.validate = () => { this.validate(); };
     }
+    this.validationChange.emit(this.validation);
   }
 }

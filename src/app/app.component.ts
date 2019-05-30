@@ -21,7 +21,7 @@ export class AppComponent  implements OnInit {
 
   async _editContact(contact: ContactDataModel) {
     this._contactForEdit = JSON.parse(JSON.stringify(contact));
-    Validation.validateAllFields(this.formValidation);
+    setTimeout(() => { Validation.validateAllFields(this.formValidation); }, 10);
   }
   async _deleteContact(contact: ContactDataModel) {
     const del = window.confirm('Are you sure you want to delete contact ' + contact.Name + '? This cannot be undone.');
@@ -45,6 +45,9 @@ export class AppComponent  implements OnInit {
     } catch (e) {
       alert(e);
     }
+  }
+  async _cancelEditContact() {
+    this._contactForEdit = null;
   }
 
   private async loadContacts() {
