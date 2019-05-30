@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ContactService } from './services/contact.service';
 import { ContactDataModel } from './models/contact.data.model';
-import { FieldValidation, Validation } from './models/formValidation';
+import { FieldValidation, FieldValidationResult, Validation } from './models/formValidation';
 
 @Component({
   selector: 'my-app',
@@ -17,6 +17,14 @@ export class AppComponent  implements OnInit {
 
   async ngOnInit() {
     this.loadContacts();
+    this.formValidation['Name'] = {customValidation: (name:string, value: string): FieldValidationResult => {
+      const result = {isValid: true, errorMsg: ''};
+      if(value.trim().toUpperCase() === 'BOBBY') {
+        result.isValid = false;
+        result.errorMsg = 'Field [' + name + '] cannot be Bobby';
+      }
+      return result;
+    }};
   }
 
   async _editContact(contact: ContactDataModel) {
@@ -48,6 +56,10 @@ export class AppComponent  implements OnInit {
   }
   async _cancelEditContact() {
     this._contactForEdit = null;
+  }
+  async _makeErrors() {
+    this.formValidation.Name.isValid = false;
+    this.formValidation.Name.errorMsg = 'Generated Error Message';
   }
 
   private async loadContacts() {

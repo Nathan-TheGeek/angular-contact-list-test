@@ -58,8 +58,13 @@ export class ValidateDirective implements OnInit, OnChanges, AfterViewInit {
   ngOnChanges(changes: SimpleChanges) {
     this.ensureValidationSetup();
     // don't validate if not setup or if fired by setting up the validation object. 
-    if(this.setup && !(changes.validation.previousValue === undefined && changes.validation.currentValue !== undefined)) {
-      this.validate();
+    const validationSetUp = (changes.validation &&changes.validation.previousValue === undefined && changes.validation.currentValue !== undefined);
+    if(this.setup && !validationSetUp) {   
+      if (changes.validation && !changes.validation.currentValue.isValid) {
+        this.showError();
+      } else {
+        this.validate();
+      }
     }
   }
 
@@ -68,7 +73,6 @@ export class ValidateDirective implements OnInit, OnChanges, AfterViewInit {
     this.hideError();
     const value = this.el.nativeElement.value;
     const fieldName = this.el.nativeElement.getAttribute('name');
-    console.log('validate field[' + fieldName + '] value[' + value + ']');
     if (this.required && !value) {
       this.validation.errorMsg = 'The field [' + fieldName + '] is required.';
     }
