@@ -87,9 +87,11 @@ export class ValidateDirective implements OnInit, OnChanges, AfterViewInit {
       this.showError();
       this.validation.isValid = false;
       this.validationChange.emit(this.validation);
+      console.log('invalid field:[' + fieldName + '] value:[' + value + ']');
     } else  {
       this.validation.isValid = true;
       this.validationChange.emit(this.validation);
+      console.log('valid field:[' + fieldName + '] value:[' + value + ']');
     }
   }
 
@@ -127,9 +129,8 @@ export class ValidateDirective implements OnInit, OnChanges, AfterViewInit {
     if (this.validation.errorMsg == null) {
       this.validation.errorMsg = '';
     }
-    if (!this.validation.validate) {
-      this.validation.validate = () => { this.validate(); return this.validation; };
-    }
+    // always update the function. the input model could have changed.
+    this.validation.validate = () => { this.validate(); return this.validation; };
     this.validationChange.emit(this.validation);
   }
 }
